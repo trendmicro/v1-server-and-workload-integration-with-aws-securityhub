@@ -20,7 +20,7 @@ This integration requires that the AWS account be integrated in Server & Workloa
 <summary> CloudFormation Template </summary> 
 In this repository you will find a CloudFormation template which will create the following infrastructure.
 
-![Architecture](docs/ArchitectureCFT.png)
+![Architecture](images/ArchitectureCFT.png)
 
 When the template completes its creation in the Outputs you will find the necessary information to make the configuration in Cloud One Workload Security.
 > SNS Topic, AccessKey, SecretKey
