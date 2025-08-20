@@ -22,7 +22,9 @@ In this repository you will find a CloudFormation template which will create the
 
 ![Architecture](images/ArchitectureCFT.png)
 
-[![Launch Stack](https://img.shields.io/badge/Launch%20on-AWS%20CloudFormation-orange)](https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateURL=https://raw.githubusercontent.com/trendmicro/v1-server-and-workload-integration-with-aws-securityhub/refs/heads/main/templates/CloudOneWorkloadSecuritySNS.yaml&stackName=Vision-One-Integration-Security-Hub)
+<a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateURL=https://v1-custom-integrations-aws.s3.us-east-1.amazonaws.com/CloudOneWorkloadSecuritySNS.yaml&stackName=Vision-One-Security-Hub-Integration" target="_blank">
+  <img src="https://img.shields.io/badge/Launch%20on-AWS%20CloudFormation-orange" alt="Launch Stack"/>
+</a>
 
 When the template completes its creation in the Outputs you will find the necessary information to make the configuration in Cloud One Workload Security.
 > SNS Topic, AccessKey, SecretKey
