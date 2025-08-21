@@ -318,6 +318,3 @@ Outputs:
   LambdaFunction:
     Description: Lamba Function to send SNS Notification to Security Hub
     Value: !Ref C1WSLambdaSecurityHub
-  CustomActionFunction:
-    Description: Lamba Function to perform custom Action with Cloud One
-    Value: !Ref ApplicationBlockRule
