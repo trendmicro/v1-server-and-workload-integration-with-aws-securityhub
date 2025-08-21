@@ -14,13 +14,11 @@ For this, it is necessary to have the following requirements:
 ### Note:
 This integration requires that the AWS account be integrated in Server & Workload Security with the use of the [Cloud Connector](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-connecting-aws-accounts#GUID-F8FAF1DF-7A1E-4C0A-ADA3-6F6FC6CAD49D-oshfva) and the Server & Workload Security [agent installed](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-add-aws-instances) and [configured](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-create-policies) for the AWS instances.
 
-## Deployments
+## Integration
 
-<details>
-<summary> CloudFormation Template </summary> 
 In this repository you will find a CloudFormation template which will create the following infrastructure.
 
-![Architecture](images/ArchitectureCFT.png)
+![Architecture](images/Diagrams-Cloud-Reference-Security-Hub-Integration.jpg)
 
 <a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateURL=https://v1-custom-integrations-aws.s3.us-east-1.amazonaws.com/CloudOneWorkloadSecuritySNS.yaml&stackName=Vision-One-Security-Hub-Integration" target="_blank">
   <img src="https://img.shields.io/badge/Launch%20on-AWS%20CloudFormation-orange" alt="Launch Stack"/>
@@ -29,7 +27,6 @@ In this repository you will find a CloudFormation template which will create the
 When the template completes its creation in the Outputs you will find the necessary information to make the configuration in Cloud One Workload Security.
 > SNS Topic, AccessKey, SecretKey
 > [SNS Integration Workload Security](https://cloudone.trendmicro.com/docs/workload-security/event-sns/#3.)
-</details>
 
 ## Contributing
 
