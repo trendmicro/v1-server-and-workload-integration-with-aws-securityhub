@@ -184,6 +184,7 @@ def workload_security_event_to_asff(ws_event, region, awsaccountid):
 def lambda_handler(event, context):
     total_events = 0
     saved_events = 0
+    print(event)
     securityhub = boto3.client("securityhub")
     region = boto3.session.Session().region_name
     awsaccountid = boto3.client("sts").get_caller_identity()["Account"]
@@ -201,12 +202,13 @@ def lambda_handler(event, context):
                     if ws_events:
                         print("Found {} Workload Security events...processing".format(len(ws_events)))
                         for ws_event in ws_events:
-                            """if('HostInstanceID' in ws_event):"""
                             total_events += 1
-                            if not ws_event["EventType"] == 'SystemEvent' or verify_required_properties(ws_event):
+                            if type(ws_event) is str:
+                                print("Skipping TestSNS type event")
+                                pass
+                            elif not ws_event["EventType"] == 'SystemEvent' or verify_required_properties(ws_event):
                                 aff_event = workload_security_event_to_asff(ws_event=ws_event, region=region, awsaccountid=awsaccountid)
                                 aff_events.append(aff_event)
-                                print(aff_event)
                             else: print("Specified event does not have the required properties to properly process it")
                     if len(aff_events) > 0:
                         response = securityhub.batch_import_findings(Findings=aff_events)
