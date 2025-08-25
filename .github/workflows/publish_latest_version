@@ -3,9 +3,6 @@ name: Publish Lambda ZIP to S3 (public)
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'src/**'     
-      - '.github/workflows/publish_latest_version.yml'
 
 permissions:
   id-token: write
