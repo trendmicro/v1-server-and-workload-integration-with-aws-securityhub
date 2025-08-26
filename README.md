@@ -8,7 +8,9 @@ For this, it is necessary to have the following requirements:
 
 
 > An active [Vision One](https://cloudone.trendmicro.com/home) account.
+
 > An active [Cloud One](https://cloudone.trendmicro.com/home) account. (Trend Micro recommends migrating to Vision One to get the full power of Trend Micro)
+
 > An [AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/) where the Lambda, SNS and SecurityHub service will be used.
 
 ### Note:
@@ -20,7 +22,7 @@ In this repository you will find a CloudFormation template which will create the
 
 ![Architecture](images/Diagrams-Cloud-Reference-Security-Hub-Integration.jpg)
 
-<a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateURL=https://v1-custom-integrations-aws.s3.us-east-1.amazonaws.com/CloudOneWorkloadSecuritySNS.yaml&stackName=Vision-One-Security-Hub-Integration" target="_blank">
+<a href="https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateURL=https://v1-server-and-workload-integration-with-aws-securityhub.s3.us-east-1.amazonaws.com/CloudOneWorkloadSecuritySNS.yaml&stackName=Vision-One-Security-Hub-Integration" target="_blank">
   <img src="https://img.shields.io/badge/Launch%20on-AWS%20CloudFormation-orange" alt="Launch Stack"/>
 </a>
 
