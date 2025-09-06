@@ -30,6 +30,19 @@ def verify_required_properties(ws_event):
             print(result)
             return result
 
+def map_major_virus_type_to_asff(major_type: int) -> str:
+    mapping = {
+        0: "POTENTIALLY_UNWANTED",  
+        1: "TROJAN",                
+        2: "VIRUS",                 
+        3: "SPYWARE",               
+        4: "POTENTIALLY_UNWANTED",  
+        5: "EXPLOIT_KIT",           
+        6: "BLENDED_THREAT",        
+        7: "BLENDED_THREAT"         
+    }
+    return mapping.get(int(major_type), "BLENDED_THREAT")
+
 def select_asff_eventType(EventType, types):
     if(EventType == 'PacketLog'):
         types.append("Unusual Behaviors/Network Flow")
@@ -60,20 +73,23 @@ def addAdditionalInformation(Event, finding):
         finding['Severity']['Normalized'] = int(20)
         select_asff_eventType(Event["EventType"], finding["Types"])
         finding['Title'] = "Trend Micro: Repeated attempted network connection on instance {}".format(Event['HostInstanceID'])
+        finding["Types"] = [""]
     if "PayloadLog" in Event["EventType"]:
         if 'Severity' in Event:
             finding['Severity']['Product'] = int(Event['Severity'])
             finding['Severity']['Normalized'] = int(int(Event['Severity']) * 17.5)
         select_asff_eventType(Event["EventType"], finding["Types"])
         finding['Title'] = "Trend Micro: Rule [{}] triggered".format(Event['Reason'])
+        finding["Types"] = [""]
     if "AntiMalwareEvent" in Event["EventType"]:
         finding['Malware'] = [
-            {
-                "Name": Event['MalwareName'],
-                "Path": Event['InfectedFilePath'],
-                "State": antimalwareStatusAction(Event['ScanResultString']),
+                {
+                    "Name": Event['MalwareName'],
+                    "Path": Event['InfectedFilePath'],
+                    "State": antimalwareStatusAction(Event['ScanResultString']),
+                    "Type": map_major_virus_type_to_asff(Event['MajorVirusType'])
                 }
-            ]
+        ]
         if Event['ScanResultString'] == "Cleaned" or Event['ScanResultString'] == "Deleted":
             finding['Severity']['Label'] = "INFORMATIONAL"
         elif Event['ScanResultString'] == "Quarantined":
@@ -82,18 +98,21 @@ def addAdditionalInformation(Event, finding):
             finding['Severity']['Label'] = "MEDIUM"
         select_asff_eventType(Event["EventType"], finding["Types"])
         finding['Title'] = "Malware [{}] detected".format(Event['MalwareName'])
+        finding["Types"] = ["TTPs/Execution"]
     if "WebReputationEvent" in Event["EventType"]:
         if 'Risk' in Event:
             finding['Severity']['Product'] = int(Event['Risk'])
             finding['Severity']['Normalized'] = int(int(Event['Risk']) * 17.5)
         select_asff_eventType(Event["EventType"], finding["Types"])
         finding['Title'] = "High risk web request to IP [{}]".format(Event['TargetIP'])
+        finding["Types"] = ["TTPs"]
     if "IntegrityEvent" in Event["EventType"]:
         if 'Severity' in Event:
             finding['Severity']['Product'] = int(Event['Severity'])
             finding['Severity']['Normalized'] = int(int(Event['Severity']) * 17.5)
         select_asff_eventType(Event["EventType"], finding["Types"])
         finding['Title'] = "Unexpected change to object [{}]".format(Event['Key'])
+        finding["Types"] = [""]
     if "LogInspectionEvent" in Event["EventType"]:
         if 'OSSEC_Level' in Event:
             finding['Severity']['Product'] = int(Event['OSSEC_Level'])
@@ -103,6 +122,7 @@ def addAdditionalInformation(Event, finding):
                 finding['Severity']['Normalized'] = int(int(Event['OSSEC_Level']) * 5)
         select_asff_eventType(Event["EventType"], finding["Types"])
         finding['Title'] = Event['OSSEC_Description']
+        finding["Types"] = [""]
     if "AppControlEvent" in Event["EventType"]:
         Process = {
             "Name": Event['FileName'],
@@ -137,13 +157,14 @@ def workload_security_event_to_asff(ws_event, region, awsaccountid):
         'LogInspectionEvent': 'log',
         'AppControlEvent': 'applicationcontrol'
         }
+    print(ws_event['HostInstanceID'])
 
     finding = {
+        "AwsAccountId": awsaccountid,
         "SchemaVersion": "2018-10-08",
         "Id": ws_event["UniqueID"],
         "ProductArn": f"arn:aws:securityhub:{region}:{awsaccountid}:product/{awsaccountid}/default",
         "GeneratorId": "trend-micro-workload-security-{}".format(event_types[ws_event["EventType"]]),
-        "AwsAccountId": awsaccountid,
         "Types": [
             ],
         "CreatedAt": ws_event['LogDate'],
@@ -171,9 +192,10 @@ def workload_security_event_to_asff(ws_event, region, awsaccountid):
             },
         "Description": "Workload Security Event, type: {}".format(event_types[ws_event["EventType"]]),
         "Resources": [
-            {
-                "Type": "AwsEc2Instance",
-                "Id":  ws_event['HostInstanceID'] if 'HostInstanceID' in ws_event else ''
+                {
+                    "Type": "AwsEc2Instance",
+                    "Id": f"arn:aws:ec2:us-west-2:123456789012:instance/{ws_event['HostInstanceID'] if 'HostInstanceID' in ws_event else ''}",
+                    "Region": region
                 }
             ],
         "Title": "Cloud One Workload Security push the following event type: {} for HostName: {}".format(event_types[ws_event["EventType"]], ws_event['Hostname'] if 'Hostname' in ws_event else ''),
@@ -184,10 +206,10 @@ def workload_security_event_to_asff(ws_event, region, awsaccountid):
 def lambda_handler(event, context):
     total_events = 0
     saved_events = 0
-    print(event)
     securityhub = boto3.client("securityhub")
     region = boto3.session.Session().region_name
     awsaccountid = boto3.client("sts").get_caller_identity()["Account"]
+    
     if 'Records' in event:
         for e in event['Records']:
             if 'EventSource' in e and e['EventSource'] == 'aws:sns':
