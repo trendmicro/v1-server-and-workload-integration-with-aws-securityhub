@@ -25,6 +25,11 @@ Resources:
     Type: AWS::IAM::AccessKey
     Properties: 
       UserName: !Ref C1WSUser
+  SecretManager:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub /TrendMicro/SecurityHub/${C1WSGroupAddUser}
+      SecretString: !Sub '{"ACCESS_KEY":"${ACCESSKey}","SECRET_KEY":"${ACCESSKey.SecretAccessKey}"}'
   LambdaRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -335,12 +340,9 @@ Outputs:
   SNSTopic:
     Description: The SNS ARN to Workload Security
     Value: !Ref SNSC1WS
-  AccessKey:
-    Description: The Access key for Worload Security User
-    Value: !Ref ACCESSKey
-  SecretKey:
-    Description: The Secret key for Worload Security User
-    Value: !GetAtt ACCESSKey.SecretAccessKey
+  AccessKeyInfo:
+    Description: The Access Key ID and Secret for Workload Security SNS Forward Events Configuration
+    Value: !Ref SecretManager
   LambdaFunction:
     Description: Lamba Function to send SNS Notification to Security Hub
     Value: !Ref C1WSLambdaSecurityHub
