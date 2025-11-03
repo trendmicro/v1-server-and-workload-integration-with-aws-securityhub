@@ -320,6 +320,9 @@ Resources:
         - Arn
       Protocol: lambda
       TopicArn: !Ref SNSC1WS
+      FilterPolicy:
+        EventType:
+          - anything-but: SystemEvent
     DependsOn: [ "C1WSLambdaSecurityHub" ]
   InvokeLambdaPermission:
     Type: AWS::Lambda::Permission
