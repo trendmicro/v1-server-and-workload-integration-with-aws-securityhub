@@ -8,9 +8,7 @@ def generate_finding_title(title):
     return "Trend Micro: {}".format(title)
 
 def verify_required_properties(ws_event):
-    result = True
     required_properties = [
-        'HostOwnerID', 
         'HostInstanceID', 
         'TenantID', 
         'EventID', 
@@ -26,9 +24,8 @@ def verify_required_properties(ws_event):
         ]
     for prop in required_properties:
         if not prop in ws_event:
-            result = False
-            print(result)
-            return result
+            return False
+        return True
 
 def map_major_virus_type_to_asff(major_type: int) -> str:
     mapping = {
@@ -174,7 +171,7 @@ def workload_security_event_to_asff(ws_event, region, awsaccountid):
             "Normalized": 0
             },
         "ProductFields": {
-            'ProviderName': "Trend Micro Cloud One",
+            'ProviderName': "Trend Micro Vision One",
             "ProviderVersion": "20",
             'trend-micro:TenantName': ws_event['TenantName'] if 'TenantName' in ws_event else '',
             'trend-micro:TenantID': str(ws_event['TenantID']) if 'TenantID' in ws_event else '',
@@ -194,7 +191,7 @@ def workload_security_event_to_asff(ws_event, region, awsaccountid):
         "Resources": [
                 {
                     "Type": "AwsEc2Instance",
-                    "Id": f"arn:aws:ec2:us-west-2:123456789012:instance/{ws_event['HostInstanceID'] if 'HostInstanceID' in ws_event else ''}",
+                    "Id": f"arn:aws:ec2:{region}:{awsaccountid}:instance/{ws_event['HostInstanceID'] if 'HostInstanceID' in ws_event else ''}",
                     "Region": region
                 }
             ],
